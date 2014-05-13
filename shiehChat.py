@@ -2,14 +2,19 @@
 
 "A chat tool."
 
+import sys
 import socket
 import threading
 import Queue
 from time import sleep, ctime
+from optparse import OptionParser, OptionGroup
+import GUIForShiehChat
 
 CODEC = 'utf-8'
 USERNUMBER = 5
 RECVBUFFSIZE = 2048
+USAGE = '%s [option] arg1, arg2' %(sys.argv[0],)
+VERSION = 'v1.0'
 
 class ChatThread(threading.Thread):
 	"""docstring for ChatThread"""
@@ -25,6 +30,25 @@ class ChatThread(threading.Thread):
 
 	def getResult(self):
 		return self.result
+
+
+def interfaceCL():
+	parser = OptionParser(usage = USAGE, version = VERSION)
+
+	parser.add_option('-v', '--verbose', action = 'store_true', \
+	dest = 'verbose', help = 'output verbosely.', default = False)
+
+	parser.add_option('-q', '--quiet', action = 'store_false', \
+	dest = 'verbose', help = 'output quietly.', default = False)
+
+	parser.add_option('-g', '--gui', action = 'store_true', \
+	dest = 'gui', help = 'open the gui.', default = False)
+
+	(options, args) = parser.parse_args()
+
+	if options.gui:
+		shiehchat = GUIForShiehChat.ShiehChatWindow()
+		print shiehchat.__doc__
 
 
 def getLocalIpAndPort():
@@ -46,18 +70,23 @@ def getTargetIpAndPort():
 def serverPrint(content):
 	print '-----Begin to recvice-----\n'
 
-	print '@[%s]Recive:%s\n' %(ctime(), content)
+	print '@[%s]Recive :%s\n' %(ctime(), content)
 	
 
 def localServer(me):
 #	print '-----Begin to recvice-----'
-
 	connect, yourAdd = me.accept()
+	myLock = threading.Lock()
+
+	myLock.acquire()
 
 	content = connect.recv(RECVBUFFSIZE)
 
 	while content:
 		serverPrint(content)
+		myLock.release()
+
+		myLock.acquire()
 
 		content = connect.recv(RECVBUFFSIZE)
 
@@ -67,23 +96,30 @@ def localServer(me):
 def clientPrint(totalBits):
 	print '-----Begin to send-----\n'
 
-	print u'@[%s]The bits size of your message:%s\n' \
+	print u'@[%s]The bits size of your message :%s\n' \
 	 %(ctime(), unicode(totalBits))
 
 
 def localClient(you):
-	theWorldToSend = raw_input()
+	myLock = threading.Lock()
 
-	totalBits = you.send(theWorldToSend)
+	myLock.acquire()
 
-	while totalBits:
+	theWordToSend = raw_input('Enter :')
+
+	totalBits = you.send(theWordToSend)
+
+	while totalBits and theWordToSend != '$QUIT':
 		clientPrint(totalBits)
+		myLock.release()
 
-		theWorldToSend = raw_input()
-		if theWorldToSend == '$QUIT':
+		myLock.acquire()
+
+		theWordToSend = raw_input('Enter :')
+		if theWordToSend == '$QUIT':
 			break
 
-		totalBits = you.send(theWorldToSend)
+		totalBits = you.send(theWordToSend)
 
 
 def startChat():
@@ -120,6 +156,8 @@ def run():
 
 
 def main():
+	interfaceCL()
+
 	run()
 
 

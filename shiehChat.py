@@ -6,9 +6,10 @@ import sys
 import socket
 import threading
 import Queue
+import Tkinter
 from time import sleep, ctime
 from optparse import OptionParser, OptionGroup
-import GUIForShiehChat
+
 
 CODEC = 'utf-8'
 USERNUMBER = 5
@@ -42,13 +43,11 @@ def interfaceCL():
 	dest = 'verbose', help = 'output quietly.', default = False)
 
 	parser.add_option('-g', '--gui', action = 'store_true', \
-	dest = 'gui', help = 'open the gui.', default = False)
+	dest = 'gui', help = 'open the gui version.', default = False)
 
 	(options, args) = parser.parse_args()
 
-	if options.gui:
-		shiehchat = GUIForShiehChat.ShiehChatWindow()
-		print shiehchat.__doc__
+	return (options, args)
 
 
 def getLocalIpAndPort():
@@ -122,6 +121,28 @@ def localClient(you):
 		totalBits = you.send(theWordToSend)
 
 
+class ShiehChatWindow(object):
+	"""docstring for ShiehChatWindow"""
+	def __init__(self):
+		super(ShiehChatWindow, self).__init__()
+		self.top = Tkinter.Tk()
+		self.top.title('SHIEHCHATGUI')
+		self.top.maxsize(1000, 1000)
+		self.top.minsize(500, 500)
+
+		self.body = Tkinter.Frame(self.top, bg = 'black')
+		self.body.pack(fill = 'both')
+
+		self.label = Tkinter.Label(self.body, fg = 'white', \
+			bg = 'black', text = 'Welcome To ShiehChat\'s GUI')
+		self.label.pack()
+
+		self.theWorldToSend = Tkinter.Entry(self.body)
+		self.theWorldToSend.pack()
+
+		self.top.mainloop()
+
+
 def startChat():
 	me = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	you = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -151,15 +172,13 @@ def startChat():
 	you.close()
 
 
-def run():
-	startChat()
-
-
 def main():
-	interfaceCL()
+	options = interfaceCL()
 
-	run()
-
+	if options[0].gui:
+		shiehChatWindow = ShiehChatWindow()
+	else:
+		startChat()
 
 if __name__ == '__main__':
 	main()

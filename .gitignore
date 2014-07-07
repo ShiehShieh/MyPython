@@ -3,3 +3,13 @@
 *.[oa]
 !*.*
 .DS_Store
+*.so
+*.toc
+*.pyz
+*.pyc
+*.log
+*.pkg
+*.txt
+*.swp
+*.h
+*.dylib

@@ -17,6 +17,15 @@ from Utility import *
 VERSION = '1.0v'
 
 
+class TimeOut(RuntimeError):
+
+    """Docstring for TimeOut. """
+
+    def __init__(self):
+        """@todo: to be defined1. """
+        RuntimeError.__init__(self)
+
+
 class Hero(pygame.sprite.Sprite):
 
     """Docstring for Hero. """
@@ -119,19 +128,11 @@ class City(pygame.sprite.Sprite):
         if RAE:
             self.revenueAndExpense(RAEarg)
 
-            #upgrade the self.treasure[1 : 4] before upgrade self.treasure[0]
+            #Upgrade the self.treasure[1 : 4] before upgrade self.treasure[0]
             self.upgradeMoney()
 
-            if self.treasure[1] < 1:
-                self.treasure[0] == 'vpoor'
-            elif self.treasure[1] < 2:
-                self.treasure[0] == 'poor'
-            elif self.treasure[1] < 3:
-                self.treasure[0] == 'normal'
-            elif self.treasure[1] < 4:
-                self.treasure[0] == 'rich'
-            elif self.treasure[1] < 5:
-                self.treasure[0] == 'vrich'
+            #Upgrade the description of economy.
+            self.upgradeDescription()
 
         elif IP:
             self.increasePeople(IParg)
@@ -140,7 +141,7 @@ class City(pygame.sprite.Sprite):
             self.trainArmy(TAarg)
 
     def upgradeMoney(self):
-        """@todo: Docstring for upgradeMoney.
+        """@todo: upgrade the self.treasure[1 : 4] before upgrade self.treasure[0]
         :returns: @todo
 
         """
@@ -157,6 +158,24 @@ class City(pygame.sprite.Sprite):
             self.treasure[2] = self.treasure[2] % 100
             self.treasure[1] = self.treasure[1] + carry
 
+    def upgradeDescription(self):
+        """@todo: Upgrade the description of economy.
+        :returns: @todo
+
+        """
+        if self.treasure[1] < 1:
+            self.treasure[0] = 'vpoor'
+        elif self.treasure[1] < 2:
+            self.treasure[0] = 'poor'
+        elif self.treasure[1] < 3:
+            self.treasure[0] = 'normal'
+        elif self.treasure[1] < 4:
+            self.treasure[0] = 'rich'
+        elif self.treasure[1] < 5:
+            self.treasure[0] = 'vrich'
+        else:
+            self.treasure[0] = 'vrich'
+
     def revenueAndExpense(self,  value):
         """@todo: Docstring for revenueAndExpense.
 
@@ -165,7 +184,6 @@ class City(pygame.sprite.Sprite):
 
         """
         self.treasure = [self.treasure[0]] + [self.treasure[i + 1] + value[i] for i in range(3)]
-        print self.treasure
 
     def increasePeople(self, value):
         """@todo: Docstring for increasePeople.
@@ -175,7 +193,6 @@ class City(pygame.sprite.Sprite):
 
         """
         self.population = [self.population[i] + value[i] for i in range(2)]
-        print self.population
 
     def trainArmy(self, **value):
         """@todo: Docstring for trainArmy.
@@ -186,6 +203,4 @@ class City(pygame.sprite.Sprite):
         """
         for branch in value.keys():
             self.troop[branch] = self.troop[branch] + value[branch]
-
-        print self.troop
 

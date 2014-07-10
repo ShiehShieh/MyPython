@@ -29,7 +29,6 @@ def loadImage(fileName):
     """
     try:
         filePath = os.path.join('Image', fileName)
-
         image    = pygame.image.load(filePath)
     except pygame.error, err:
         print 'Can not load the image file properly.'
@@ -57,16 +56,18 @@ def loadSound(fileName):
             """
             pass
 
-    if not pygame.mixer :
+    if not pygame.mixer:
         return NoneSound()
 
     try:
         filePath = os.path.join('Sound', fileName)
-
         sound    = pygame.mixer.Sound(filePath)
+
     except pygame.error, err:
         print 'Can not load the sound file properly.'
         print err
+
+        return NoneSound()
 
     return sound
 

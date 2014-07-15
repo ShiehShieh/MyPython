@@ -12,7 +12,6 @@
 import os
 import sys
 import pygame
-import Tkinter
 from pygame.locals import *
 from GameObject import *
 from Utility import *
@@ -156,7 +155,6 @@ def main():
 
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((146, 146, 146))
     background.blit(backgroundCat, backgroundCatRect)
 
     #Initialize all the hero and soldier.
@@ -194,14 +192,28 @@ def main():
     #load the background music.
     backgroundMusic = loadSound('MainTheme.wav')
 
-    clock           = pygame.time.Clock()
+    #Manage the clock of the game.
+    frequency = 1
+    clock     = pygame.time.Clock()
+    faster = pygame.Surface((50, 50))
+    slower = pygame.Surface((50, 50))
+    faster = faster.convert()
+    slower = slower.convert()
+    fasterImage, fasterRect = loadImage('Faster.png')
+    slowerImage, slowerRect = loadImage('Slower.png')
+    faster.blit(fasterImage, fasterRect)
+    slower.blit(slowerImage, slowerRect)
 
     while True:
-        clock.tick(1)
+        clock.tick(frequency)
 
         for event in pygame.event.get():
             if event.type == QUIT:
+                print 'Cleaning up.'
                 return
+            elif event.type == MOUSEBUTTONDOWN:
+                if pygame.mouse.get_pos :
+                    pass
             elif event.type == KEYDOWN:
                 if event.key == K_h:
                     print 'pass'
@@ -230,6 +242,8 @@ def main():
                     hero.update('right')
 
         screen.blit(background, (0, 0))
+        screen.blit(faster, (10, 10))
+        screen.blit(slower, (20, 20))
 
         soldierGroup.update()
 #       cityGroup.update(True, (0, 5, 0),  True, (0, 0), True, {})

@@ -33,7 +33,7 @@ class CertainPage(object):
 
     def __init__(self, url):
         """@todo: to be defined1. """
-        self.url = url
+        self.url     = url
         self.urlFile = self.fileSystem(url)
 
     def download(self):
@@ -43,7 +43,6 @@ class CertainPage(object):
         """
         try:
             localFile = urllib.urlretrieve(self.url, self.urlFile)
-
             print "\033[0;34;1mURL %s have been download just now.\033[0m" % (self.url)
         except Exception:
             localFile = "$$$ Error : invaild URL : %s" % (self.url)
@@ -60,7 +59,6 @@ class CertainPage(object):
         """
         urlStructure = urlparse.urlparse(url)
         path         = urlStructure[1] + urlStructure[2]
-        dirTree      = os.path.splitext(path)
 
         if len(urlStructure[2]) == 0 or urlStructure[2] == '/':
             if path[-1] == '/':
@@ -71,8 +69,10 @@ class CertainPage(object):
             if os.sep != '/':
                 path.replace('/', os.sep)
 
-        ldir = os.path.dirname(path)
+        #ldir: dirname of path.
+        ldir     = os.path.dirname(path)
         dirTuple = ['/'.join(ldir.split('/')[ : i + 1]) for i in range(len(ldir.split('/')))]
+
         if not os.path.isdir(ldir):
             for subDir in dirTuple:
                 if os.path.exists(unicode(subDir)):
@@ -116,10 +116,10 @@ class Manager(object):
         """
         mainPage = CertainPage(url)
 
-        mainPage.download()
+        localFile = mainPage.download()[0]
 
-        if url[0] == '$':
-            print url
+        if localFile[0] == '$':
+            print localFile
             
             return 1
 

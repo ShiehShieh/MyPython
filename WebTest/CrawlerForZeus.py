@@ -44,7 +44,7 @@ class CertainPage(object):
         try:
             localFile = urllib.urlretrieve(self.url, self.urlFile)
             print "\033[0;34;1mURL %s have been download just now.\033[0m" % (self.url)
-        except Exception:
+        except IOError:
             localFile = "$$$ Error : invaild URL : %s" % (self.url)
 
         return localFile
@@ -97,7 +97,7 @@ class Manager(object):
 
     """Docstring for Manager. """
 
-    def __init__(self, url):
+    def __init__(self, url, domain=None):
         """@todo: to be defined1.
 
         :url: @todo
@@ -108,6 +108,11 @@ class Manager(object):
         self.done     = []
         self.domain   = urlparse.urlparse(self.url)[1]
 
+        if domain:
+            self.domain = domain
+
+        print self.domain
+
     def getAllAnchors(self, url):
         """@todo: Docstring for getAllAnchor.
 
@@ -116,7 +121,7 @@ class Manager(object):
         """
         mainPage = CertainPage(url)
 
-        localFile = mainPage.download()[0]
+        localFile = mainPage.download()
 
         if localFile[0] == '$':
             print localFile
@@ -128,7 +133,7 @@ class Manager(object):
         anchorInHtml = mainPage.parserHTML()
 
         for link in anchorInHtml:
-            if link[0] == '/':
+            if link[0 : 5] != 'http':
                 link = urlparse.urljoin(url, link)
             if link.find(self.domain) != -1:
                 if link not in self.todoList:
@@ -175,10 +180,10 @@ def interfaceCL():
 def main():
     options = interfaceCL()
 
-    if len(sys.argv) > 1 and sys.argv[-1].find('http') != -1:
-        manager = Manager(sys.argv[-1])
+    if len(sys.argv) > 1 and sys.argv[-2].find('http') != -1:
+        manager = Manager(sys.argv[-2], sys.argv[-1])
     else:
-        manager = Manager(raw_input("URL :"))
+        manager = Manager(raw_input("URL :"), raw_input("Domain :"))
 
     manager.getAllPages()
 
